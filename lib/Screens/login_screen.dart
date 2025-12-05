@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:batch35_floorease/Screens/home_screen.dart';
+import 'package:batch35_floorease/Screens/create_account_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -118,9 +120,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),
                 // Login button
                 ElevatedButton(
-                  onPressed: () {
-                    // Handle login
-                  },
+                onPressed: () {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0D7A6A),
                     foregroundColor: Colors.white,
@@ -155,8 +160,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // Handle create account
-                      },
+   Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CreateAccountScreen()),
+    );                      },
                       child: const Text(
                         'Create now',
                         style: TextStyle(

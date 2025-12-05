@@ -1,3 +1,4 @@
+import 'package:batch35_floorease/Screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class CreateAccountScreen extends StatefulWidget {
@@ -27,6 +28,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -90,6 +92,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     width: 200,
                     child: ElevatedButton(
                       onPressed: () {
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
                         // Handle sign up logic
                       },
                       style: ElevatedButton.styleFrom(
@@ -121,7 +129,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          // Navigate to login screen
+                            Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
                         },
                         child: const Text(
                           'Log in',
