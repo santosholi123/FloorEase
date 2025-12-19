@@ -11,7 +11,7 @@ class HomogeneousFlooringScreen extends StatelessWidget {
           'Welcome to Homogeneous Flooring Page',
           style: TextStyle(
             fontSize: 24,
-            //fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
