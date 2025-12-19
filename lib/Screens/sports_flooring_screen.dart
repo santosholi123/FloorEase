@@ -11,7 +11,7 @@ class SportsFlooringScreen extends StatelessWidget {
           'Welcome to Sports Flooring Page',
           style: TextStyle(
             fontSize: 24,
-            //fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
