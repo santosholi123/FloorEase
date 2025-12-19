@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'flooring_card.dart';
+import 'profile_screen.dart';
+import 'homogeneous_flooring_screen.dart';
+import 'heterogeneous_flooring_screen.dart';
+import 'sports_flooring_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -37,14 +41,28 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage('assets/images/profile.png'),
+
+                  // Profile image
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
+                        ),
+                      );
+                    },
+                    child: const CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage('assets/images/profile.png'),
+                    ),
                   ),
                 ],
               ),
             ),
+
             const SizedBox(height: 20),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Container(
@@ -72,7 +90,10 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
+
+            // 🔹 FILTER BUTTONS NAVIGATION
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -98,47 +119,65 @@ class HomeScreen extends StatelessWidget {
                     label: const Text('Homogeneous'),
                     selected: false,
                     backgroundColor: Colors.white,
-                    labelStyle: const TextStyle(
-                      color: Colors.black,
-                    ),
+                    labelStyle: const TextStyle(color: Colors.black),
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
-                    onSelected: (bool selected) {},
+                    onSelected: (bool selected) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomogeneousFlooringScreen(),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(width: 10),
                   FilterChip(
                     label: const Text('Heterogeneous'),
                     selected: false,
                     backgroundColor: Colors.white,
-                    labelStyle: const TextStyle(
-                      color: Colors.black,
-                    ),
+                    labelStyle: const TextStyle(color: Colors.black),
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
-                    onSelected: (bool selected) {},
+                    onSelected: (bool selected) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HeterogeneousFlooringScreen(),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(width: 10),
                   FilterChip(
                     label: const Text('Sports'),
                     selected: false,
                     backgroundColor: Colors.white,
-                    labelStyle: const TextStyle(
-                      color: Colors.black,
-                    ),
+                    labelStyle: const TextStyle(color: Colors.black),
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
-                    onSelected: (bool selected) {},
+                    onSelected: (bool selected) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SportsFlooringScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
             ),
+
             const SizedBox(height: 20),
+
+            // 🔹 CARD NAVIGATION
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -147,32 +186,58 @@ class HomeScreen extends StatelessWidget {
                   childAspectRatio: 0.9,
                   crossAxisSpacing: 15,
                   mainAxisSpacing: 15,
-                  children: const [
-                    FlooringCard(
-                      image: 'assets/images/homogeneous.png',
-                      title: 'Homogeneous\nFlooring',
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomogeneousFlooringScreen(),
+                          ),
+                        );
+                      },
+                      child: const FlooringCard(
+                        image: 'assets/images/homogeneous.png',
+                        title: 'Homogeneous\nFlooring',
+                      ),
                     ),
-                    FlooringCard(
-                      image: 'assets/images/heterogeneous.png',
-                      title: 'Heterogeneous\nFlooring',
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HeterogeneousFlooringScreen(),
+                          ),
+                        );
+                      },
+                      child: const FlooringCard(
+                        image: 'assets/images/heterogeneous.png',
+                        title: 'Heterogeneous\nFlooring',
+                      ),
                     ),
-                    FlooringCard(
-                      image: 'assets/images/sports.png',
-                      title: 'Sports Flooring',
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SportsFlooringScreen(),
+                          ),
+                        );
+                      },
+                      child: const FlooringCard(
+                        image: 'assets/images/sports.png',
+                        title: 'Sports Flooring',
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
+
+            // 🔹 BOTTOM NAV
             Container(
               height: 80,
-              decoration: const BoxDecoration(
-                color: Color(0xFF007369),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(0),
-                  topRight: Radius.circular(0),
-                ),
-              ),
+              color: const Color(0xFF007369),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -182,7 +247,14 @@ class HomeScreen extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.person, color: Colors.white, size: 30),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
