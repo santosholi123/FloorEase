@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:batch35_floorease/Screens/login_screen.dart';
+import 'package:batch35_floorease/features/auth/presentation/pages/login_screen.dart';
 
 class OnboardingScreen1 extends StatelessWidget {
   const OnboardingScreen1({super.key});
