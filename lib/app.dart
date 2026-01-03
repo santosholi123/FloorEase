@@ -1,5 +1,6 @@
+import 'package:batch35_floorease/theme/theme_data.dart';
 import 'package:flutter/material.dart';
-import 'package:batch35_floorease/screens/splash_screen.dart';
+import 'package:batch35_floorease/features/splash/presentation/pages/splash_screen.dart';
 
 
 class App extends StatelessWidget {
@@ -10,9 +11,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
-      theme: ThemeData(
-        primaryColor: const Color(0xFF0A2463),
-      ),
+      theme: getApplicationTheme()
     );
   }
 }
