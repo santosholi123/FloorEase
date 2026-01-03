@@ -72,7 +72,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
                       const Divider(color: Colors.black38),
                       SizedBox(height: isWide ? 20 : 16),
-//
+
                       Center(
                         child: ConstrainedBox(
                           constraints: BoxConstraints(maxWidth: isWide ? 420 : double.infinity),
