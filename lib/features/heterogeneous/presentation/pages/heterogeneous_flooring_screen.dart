@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
-class HomogeneousFlooringScreen extends StatelessWidget {
-  const HomogeneousFlooringScreen({super.key});
+class HeterogeneousFlooringScreen extends StatelessWidget {
+  const HeterogeneousFlooringScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Text(
-          'Welcome to Homogeneous Flooring Page',
-          style: TextStyle(
+          'Welcome to Heterogeneous\nFlooring Page',
+          textAlign: TextAlign.center, 
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),

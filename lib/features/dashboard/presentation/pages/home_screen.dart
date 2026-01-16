@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'flooring_card.dart';
-import 'profile_screen.dart';
-import 'homogeneous_flooring_screen.dart';
-import 'heterogeneous_flooring_screen.dart';
-import 'sports_flooring_screen.dart';
+import 'package:batch35_floorease/features/dashboard/presentation/pages/flooring_card.dart';
+import 'package:batch35_floorease/features/profile/presentation/pages/profile_screen.dart';
+import 'package:batch35_floorease/features/homogeneous/presentation/pages/homogeneous_flooring_screen.dart';
+import 'package:batch35_floorease/features/heterogeneous/presentation/pages/heterogeneous_flooring_screen.dart';
+import 'package:batch35_floorease/features/sports/presentation/pages/sports_flooring_screen.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -71,7 +72,7 @@ class HomeScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withAlpha((0.05 * 255).toInt()),
                       blurRadius: 10,
                       offset: const Offset(0, 5),
                     ),

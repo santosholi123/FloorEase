@@ -17,7 +17,7 @@ class FlooringCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha((0.1 * 255).toInt()),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -39,7 +39,7 @@ class FlooringCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withAlpha((0.6 * 255).toInt()),
                 ),
                 child: Text(
                   title,

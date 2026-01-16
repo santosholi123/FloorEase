@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:batch35_floorease/Screens/onboarding_screen.dart';
+import 'package:batch35_floorease/features/onboarding/presentation/pages/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
