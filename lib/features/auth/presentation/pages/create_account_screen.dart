@@ -1,9 +1,9 @@
+import 'package:batch35_floorease/core/errors/failures.dart';
 import 'package:batch35_floorease/features/auth/presentation/pages/login_screen.dart';
-import 'package:batch35_floorease/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/providers/auth_provider.dart';
+import '../provider/auth_provider.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
@@ -42,100 +42,225 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           ),
         ),
         child: SafeArea(
-          child: LayoutBuilder(builder: (context, constraints) {
-            final isWide = constraints.maxWidth > 600;
-            final horizontalPadding = isWide ? 48.0 : 24.0;
-            final headingSize = isWide ? 36.0 : 32.0;
-            final subtitleSize = isWide ? 18.0 : 16.0;
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 600;
+              final horizontalPadding = isWide ? 48.0 : 24.0;
+              final headingSize = isWide ? 36.0 : 32.0;
+              final subtitleSize = isWide ? 18.0 : 16.0;
 
-            return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 24),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: isWide ? 700 : double.infinity),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: isWide ? 48 : 24),
-                      Text('Create Account', style: TextStyle(fontSize: headingSize, fontWeight: FontWeight.bold, color: Colors.black)),
-                      const SizedBox(height: 8),
-                      Text('Smart Floors. Smart Choice. FloorEase.', style: TextStyle(fontSize: subtitleSize, color: Colors.black87)),
-                      SizedBox(height: isWide ? 36 : 24),
+              return SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontalPadding,
+                  vertical: 24,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isWide ? 700 : double.infinity,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: isWide ? 48 : 24),
+                        Text(
+                          'Create Account',
+                          style: TextStyle(
+                            fontSize: headingSize,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Smart Floors. Smart Choice. FloorEase.',
+                          style: TextStyle(
+                            fontSize: subtitleSize,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        SizedBox(height: isWide ? 36 : 24),
 
-                      _buildInputField(label: 'Full Name', hintText: 'Enter Your Full Name', controller: _fullNameController),
-                      SizedBox(height: isWide ? 20 : 16),
+                        _buildInputField(
+                          label: 'Full Name',
+                          hintText: 'Enter Your Full Name',
+                          controller: _fullNameController,
+                        ),
+                        SizedBox(height: isWide ? 20 : 16),
 
-                      _buildInputField(label: 'Mobile Number', hintText: 'Enter mobile number', controller: _mobileNumberController, keyboardType: TextInputType.phone),
-                      SizedBox(height: isWide ? 20 : 16),
+                        _buildInputField(
+                          label: 'Mobile Number',
+                          hintText: 'Enter mobile number',
+                          controller: _mobileNumberController,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        SizedBox(height: isWide ? 20 : 16),
 
-                      _buildInputField(label: 'Email', hintText: 'Enter your email address', controller: _emailController, keyboardType: TextInputType.emailAddress),
-                      SizedBox(height: isWide ? 20 : 16),
+                        _buildInputField(
+                          label: 'Email',
+                          hintText: 'Enter your email address',
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        SizedBox(height: isWide ? 20 : 16),
 
-                      _buildPasswordField(),
-                      SizedBox(height: isWide ? 20 : 16),
+                        _buildPasswordField(),
+                        SizedBox(height: isWide ? 20 : 16),
 
-                      const Divider(color: Colors.black38),
-                      SizedBox(height: isWide ? 20 : 16),
+                        const Divider(color: Colors.black38),
+                        SizedBox(height: isWide ? 20 : 16),
 
-                      if (authProvider.errorMessage != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                            authProvider.errorMessage!,
-                            style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                        if (authProvider.errorMessage != null)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              authProvider.errorMessage!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+
+                        Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: isWide ? 420 : double.infinity,
+                            ),
+                            child: ElevatedButton(
+                              onPressed: authProvider.isLoading
+                                  ? null
+                                  : () async {
+                                      try {
+                                        await authProvider.register(
+                                          _fullNameController.text.trim(),
+                                          _emailController.text.trim(),
+                                          _passwordController.text.trim(),
+                                        );
+
+                                        if (!mounted) return;
+
+                                        // Success case
+                                        if (authProvider.errorMessage == null) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Register successful ✅',
+                                              ),
+                                            ),
+                                          );
+
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const LoginScreen(),
+                                            ),
+                                          );
+                                        } else {
+                                          // Error case from provider
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                authProvider.errorMessage!,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } on ApiFailure catch (failure) {
+                                        if (!mounted) return;
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(failure.message),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        if (!mounted) return;
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(content: Text(e.toString())),
+                                        );
+                                      }
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF1D7D74),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 15,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: authProvider.isLoading
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 4,
+                                      ),
+                                      child: Text(
+                                        'Get Started',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                            ),
                           ),
                         ),
 
-                      Center(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: isWide ? 420 : double.infinity),
-                          child: ElevatedButton(
-                            onPressed: authProvider.isLoading
-                                ? null
-                                : () async {
-                                    final name = _fullNameController.text.trim();
-                                    final email = _emailController.text.trim();
-                                    final password = _passwordController.text;
-                                    if (name.isEmpty || email.isEmpty || password.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
-                                      return;
-                                    }
-                                    await authProvider.register(name, email, password);
-                                  },
-                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1D7D74), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                            child: authProvider.isLoading
-                                ? const SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                  )
-                                : const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 4),
-                                    child: Text('Get Started', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        SizedBox(height: isWide ? 20 : 16),
+
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Already have an account?',
+                                style: TextStyle(color: Colors.black87),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (c) => const LoginScreen(),
                                   ),
+                                ),
+                                child: const Text(
+                                  'Log in',
+                                  style: TextStyle(
+                                    color: Color(0xFF1D7D74),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
 
-                      SizedBox(height: isWide ? 20 : 16),
-
-                      Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text('Already have an account?', style: TextStyle(color: Colors.black87)),
-                            TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const LoginScreen())), child: const Text('Log in', style: TextStyle(color: Color(0xFF1D7D74), fontWeight: FontWeight.bold))),
-                          ],
-                        ),
-                      ),
-
-                      SizedBox(height: isWide ? 20 : 16),
-                    ],
+                        SizedBox(height: isWide ? 20 : 16),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          }),
+              );
+            },
+          ),
         ),
       ),
     );

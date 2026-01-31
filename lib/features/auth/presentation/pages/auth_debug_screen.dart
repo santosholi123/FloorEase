@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:batch35_floorease/services/auth_service.dart';
-import 'package:batch35_floorease/models/user.dart';
+import 'package:batch35_floorease/features/auth/Data/datasources/auth_local_datasource.dart';
+import 'package:batch35_floorease/features/auth/data/models/user.dart';
 
 class AuthDebugScreen extends StatefulWidget {
   const AuthDebugScreen({super.key});
@@ -10,12 +10,13 @@ class AuthDebugScreen extends StatefulWidget {
 }
 
 class _AuthDebugScreenState extends State<AuthDebugScreen> {
+  final ds = AuthLocalDatasource();
   late Future<List<User>> _usersFuture;
- 
+
   @override
   void initState() {
     super.initState();
-    _usersFuture = AuthService.instance.getAllUsers();
+    _usersFuture = _getAllUsers();
   }
 
   @override
@@ -28,23 +29,24 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (snapshot.hasError) return Center(child: Text('Error: \\${snapshot.error}'));
+          if (snapshot.hasError)
+            return Center(child: Text('Error: \\${snapshot.error}'));
           final users = snapshot.data ?? [];
-          if (users.isEmpty) return const Center(child: Text('No users')); 
+          if (users.isEmpty) return const Center(child: Text('No users'));
           return ListView.separated(
             itemCount: users.length,
             separatorBuilder: (_, __) => const Divider(),
             itemBuilder: (context, i) {
               final u = users[i];
-              return ListTile(
-                title: Text(u.name),
-                subtitle: Text(u.email),
-                trailing: Text(u.createdAt.toIso8601String()),
-              );
+              return ListTile(title: Text(u.name), subtitle: Text(u.email));
             },
           );
         },
       ),
     );
+  }
+
+  Future<List<User>> _getAllUsers() async {
+    return ds.getAllUsers();
   }
 }

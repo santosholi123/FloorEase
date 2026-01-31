@@ -1,14 +1,93 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:batch35_floorease/features/dashboard/presentation/pages/flooring_card.dart';
+import 'package:dio/dio.dart';
 import 'package:batch35_floorease/features/profile/presentation/pages/profile_screen.dart';
 import 'package:batch35_floorease/features/homogeneous/presentation/pages/homogeneous_flooring_screen.dart';
 import 'package:batch35_floorease/features/heterogeneous/presentation/pages/heterogeneous_flooring_screen.dart';
 import 'package:batch35_floorease/features/sports/presentation/pages/sports_flooring_screen.dart';
+import 'package:batch35_floorease/core/utils/image_picker_helper.dart';
+import 'package:batch35_floorease/core/api/api_endpoints.dart';
 
-
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+enum FloorType { homogeneous, heterogeneous, sports }
+
+class _HomeScreenState extends State<HomeScreen> {
+  // State variables for each card's image URL
+  String? homogeneousImageUrl = 'assets/images/homogeneous.png';
+  String? heterogeneousImageUrl = 'assets/images/heterogeneous.png';
+  String? sportsImageUrl = 'assets/images/sports.png';
+
+  bool isUploading = false;
+
+  Future<void> pickAndUploadForCard(FloorType type) async {
+    // Pick image from gallery
+    final image = await ImagePickerHelper.pickFromGallery();
+    if (image == null) return;
+
+    print("Uploading image...");
+    setState(() {
+      isUploading = true;
+    });
+
+    try {
+      final dio = Dio();
+      final formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(
+          image.path,
+          filename: image.path.split('/').last,
+        ),
+      });
+
+      final response = await dio.post(
+        '${ApiEndpoints.baseUrl}/api/upload',
+        data: formData,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = response.data as Map<String, dynamic>;
+        final uploadedImageUrl = responseData['imageUrl'];
+
+        setState(() {
+          // Update only the specific card's image URL
+          switch (type) {
+            case FloorType.homogeneous:
+              homogeneousImageUrl = uploadedImageUrl;
+              break;
+            case FloorType.heterogeneous:
+              heterogeneousImageUrl = uploadedImageUrl;
+              break;
+            case FloorType.sports:
+              sportsImageUrl = uploadedImageUrl;
+              break;
+          }
+          isUploading = false;
+        });
+
+        print("Upload success: $uploadedImageUrl");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Image uploaded successfully')),
+          );
+        }
+      }
+    } catch (e) {
+      print("Upload error: $e");
+      setState(() {
+        isUploading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Upload failed')));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +97,10 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 10.0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -109,7 +191,10 @@ class HomeScreen extends StatelessWidget {
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
@@ -121,7 +206,10 @@ class HomeScreen extends StatelessWidget {
                     selected: false,
                     backgroundColor: Colors.white,
                     labelStyle: const TextStyle(color: Colors.black),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
@@ -129,7 +217,8 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const HomogeneousFlooringScreen(),
+                          builder: (context) =>
+                              const HomogeneousFlooringScreen(),
                         ),
                       );
                     },
@@ -140,7 +229,10 @@ class HomeScreen extends StatelessWidget {
                     selected: false,
                     backgroundColor: Colors.white,
                     labelStyle: const TextStyle(color: Colors.black),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
@@ -148,7 +240,8 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const HeterogeneousFlooringScreen(),
+                          builder: (context) =>
+                              const HeterogeneousFlooringScreen(),
                         ),
                       );
                     },
@@ -159,7 +252,10 @@ class HomeScreen extends StatelessWidget {
                     selected: false,
                     backgroundColor: Colors.white,
                     labelStyle: const TextStyle(color: Colors.black),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
@@ -188,35 +284,41 @@ class HomeScreen extends StatelessWidget {
                   crossAxisSpacing: 15,
                   mainAxisSpacing: 15,
                   children: [
-                    GestureDetector(
+                    // Homogeneous Card
+                    _buildFlooringCardWithUpload(
+                      imageUrl: homogeneousImageUrl!,
+                      title: 'Homogeneous\nFlooring',
+                      floorType: FloorType.homogeneous,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const HomogeneousFlooringScreen(),
+                            builder: (context) =>
+                                const HomogeneousFlooringScreen(),
                           ),
                         );
                       },
-                      child: const FlooringCard(
-                        image: 'assets/images/homogeneous.png',
-                        title: 'Homogeneous\nFlooring',
-                      ),
                     ),
-                    GestureDetector(
+                    // Heterogeneous Card
+                    _buildFlooringCardWithUpload(
+                      imageUrl: heterogeneousImageUrl!,
+                      title: 'Heterogeneous\nFlooring',
+                      floorType: FloorType.heterogeneous,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const HeterogeneousFlooringScreen(),
+                            builder: (context) =>
+                                const HeterogeneousFlooringScreen(),
                           ),
                         );
                       },
-                      child: const FlooringCard(
-                        image: 'assets/images/heterogeneous.png',
-                        title: 'Heterogeneous\nFlooring',
-                      ),
                     ),
-                    GestureDetector(
+                    // Sports Card
+                    _buildFlooringCardWithUpload(
+                      imageUrl: sportsImageUrl!,
+                      title: 'Sports Flooring',
+                      floorType: FloorType.sports,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -225,10 +327,6 @@ class HomeScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      child: const FlooringCard(
-                        image: 'assets/images/sports.png',
-                        title: 'Sports Flooring',
-                      ),
                     ),
                   ],
                 ),
@@ -247,7 +345,11 @@ class HomeScreen extends StatelessWidget {
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: const Icon(Icons.person, color: Colors.white, size: 30),
+                    icon: const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: 30,
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -261,6 +363,118 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlooringCardWithUpload({
+    required String imageUrl,
+    required String title,
+    required FloorType floorType,
+    required VoidCallback onTap,
+  }) {
+    final isNetworkImage = imageUrl.startsWith('http');
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha((0.1 * 255).toInt()),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Image (asset or network)
+              isNetworkImage
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.error),
+                        );
+                      },
+                    )
+                  : Image.asset(imageUrl, fit: BoxFit.cover),
+
+              // Title overlay at bottom
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 15,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha((0.6 * 255).toInt()),
+                  ),
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+
+              // "+" icon overlay at top-right
+              Positioned(
+                top: 8,
+                right: 8,
+                child: GestureDetector(
+                  key: floorType == FloorType.homogeneous
+                      ? const Key('add_image_homogeneous')
+                      : floorType == FloorType.heterogeneous
+                      ? const Key('add_image_heterogeneous')
+                      : const Key('add_image_sports'),
+                  onTap: () => pickAndUploadForCard(floorType),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF007369),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withAlpha((0.3 * 255).toInt()),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.add, color: Colors.white, size: 24),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
