@@ -135,6 +135,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                         await authProvider.register(
                                           _fullNameController.text.trim(),
                                           _emailController.text.trim(),
+                                          _mobileNumberController.text.trim(),
                                           _passwordController.text.trim(),
                                         );
 

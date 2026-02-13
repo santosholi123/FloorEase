@@ -5,7 +5,12 @@ class RegisterUseCase {
 
   final AuthRepository authRepository;
 
-  Future<void> call(String name, String email, String password) {
-    return authRepository.register(name, email, password);
+  Future<void> call(
+    String fullName,
+    String email,
+    String phone,
+    String password,
+  ) {
+    return authRepository.register(fullName, email, phone, password);
   }
 }

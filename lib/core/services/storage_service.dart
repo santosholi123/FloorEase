@@ -1,15 +1,19 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
   final SharedPreferences _prefs;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   StorageService({required SharedPreferences prefs}) : _prefs = prefs;
 
   // String
   Future<bool> setString(String key, String value) =>
       _prefs.setString(key, value);
-      
+
   String? getString(String key) => _prefs.getString(key);
+
+  Future<String?> getSecureString(String key) => _secureStorage.read(key: key);
 
   // Int
   Future<bool> setInt(String key, int value) => _prefs.setInt(key, value);

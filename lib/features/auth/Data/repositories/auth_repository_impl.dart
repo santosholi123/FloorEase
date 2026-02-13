@@ -12,7 +12,12 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> register(String name, String email, String password) {
-    return remoteDatasource.register(name, email, password);
+  Future<void> register(
+    String fullName,
+    String email,
+    String phone,
+    String password,
+  ) {
+    return remoteDatasource.register(fullName, email, phone, password);
   }
 }

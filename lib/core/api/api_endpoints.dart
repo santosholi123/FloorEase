@@ -8,4 +8,7 @@ class ApiEndpoints {
   static const String register = '/api/auth/register';
   static const String logout = '/auth/logout';
   static const String refresh = '/auth/refresh';
+
+  // Profile endpoints
+  static const String profile = '/profile';
 }

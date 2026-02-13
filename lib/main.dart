@@ -11,6 +11,14 @@ import 'package:batch35_floorease/features/auth/data/repositories/auth_repositor
 import 'package:batch35_floorease/features/auth/domain/usecases/login_usecase.dart';
 import 'package:batch35_floorease/features/auth/domain/usecases/register_usecase.dart';
 import 'package:batch35_floorease/features/auth/presentation/provider/auth_provider.dart';
+import 'package:batch35_floorease/features/profile/Data/datasources/profile_remote_datasource.dart';
+import 'package:batch35_floorease/features/profile/Data/repositories/profile_repository_impl.dart';
+import 'package:batch35_floorease/features/profile/domain/usecases/delete_profile_image_usecase.dart';
+import 'package:batch35_floorease/features/profile/domain/usecases/get_user_profile_usecase.dart';
+import 'package:batch35_floorease/features/profile/domain/usecases/update_profile_image_usecase.dart';
+import 'package:batch35_floorease/features/profile/domain/usecases/update_user_profile_usecase.dart';
+import 'package:batch35_floorease/features/profile/domain/usecases/upload_profile_image_usecase.dart';
+import 'package:batch35_floorease/features/profile/presentation/provider/profile_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +47,38 @@ Future<void> main() async {
             return AuthProvider(
               loginUseCase: loginUseCase,
               registerUseCase: registerUseCase,
+            );
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (_) {
+            final apiClient = ApiClient();
+            final remoteDataSource = ProfileRemoteDataSource(
+              apiClient: apiClient,
+            );
+            final profileRepository = ProfileRepositoryImpl(remoteDataSource);
+            final getUserProfileUseCase = GetUserProfileUseCase(
+              profileRepository,
+            );
+            final uploadProfileImageUseCase = UploadProfileImageUseCase(
+              profileRepository,
+            );
+            final updateProfileImageUseCase = UpdateProfileImageUseCase(
+              profileRepository,
+            );
+            final deleteProfileImageUseCase = DeleteProfileImageUseCase(
+              profileRepository,
+            );
+            final updateUserProfileUseCase = UpdateUserProfileUseCase(
+              profileRepository,
+            );
+
+            return ProfileProvider(
+              getUserProfileUseCase,
+              uploadProfileImageUseCase,
+              updateProfileImageUseCase,
+              deleteProfileImageUseCase,
+              updateUserProfileUseCase,
             );
           },
         ),
