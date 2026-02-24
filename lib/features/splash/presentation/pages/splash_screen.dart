@@ -32,10 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF00C3E3),
-              Color(0xFFA6FFB8),
-            ],
+            colors: [Color(0xFF00C3E3), Color(0xFFA6FFB8)],
           ),
         ),
         child: SafeArea(
@@ -152,3 +149,4 @@ class RoofPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+//
