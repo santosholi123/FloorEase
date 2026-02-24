@@ -266,4 +266,3 @@ class _PaletteCard extends StatelessWidget {
     );
   }
 }
-//
