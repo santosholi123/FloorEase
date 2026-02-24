@@ -1,6 +1,8 @@
+import '../config/app_config.dart';
+
 class ApiEndpoints {
-  // Base configuration
-  static const String baseUrl = 'http://10.0.2.2:4000';
+  // Base configuration - dynamically determined based on device type
+  static Future<String> get baseUrl async => await AppConfig.baseUrl;
   static const Duration timeout = Duration(seconds: 30);
 
   // Auth endpoints
@@ -8,6 +10,9 @@ class ApiEndpoints {
   static const String register = '/api/auth/register';
   static const String logout = '/auth/logout';
   static const String refresh = '/auth/refresh';
+  static const String forgotPassword = '/api/auth/forgot-password';
+  static const String verifyResetOtp = '/api/auth/verify-reset-otp';
+  static const String resetPassword = '/api/auth/reset-password';
 
   // Profile endpoints
   static const String profile = '/profile';

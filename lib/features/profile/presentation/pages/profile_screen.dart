@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:batch35_floorease/features/profile/domain/entities/profile_entity.dart';
 import 'package:batch35_floorease/features/profile/presentation/provider/profile_provider.dart';
 import 'package:batch35_floorease/features/auth/presentation/provider/auth_provider.dart';
+import 'package:batch35_floorease/features/dashboard/presentation/pages/home_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -24,7 +26,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  final String fallbackImageUrl = 'https://i.pravatar.cc/300';
   final ImagePicker _picker = ImagePicker();
 
   File? _image;
@@ -146,8 +147,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Align(
                               alignment: Alignment.centerLeft,
                               child: IconButton(
-                                onPressed: () =>
-                                    Navigator.of(context).maybePop(),
+                                onPressed: () {
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const HomeScreen(),
+                                    ),
+                                    (route) => false,
+                                  );
+                                },
                                 icon: const Icon(
                                   Icons.arrow_back_ios_new_rounded,
                                 ),
@@ -158,26 +166,139 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Center(
                               child: Consumer<ProfileProvider>(
                                 builder: (context, provider, child) {
-                                  final imageUrl =
-                                      (provider
-                                              .profile
-                                              ?.profileImage
-                                              ?.isNotEmpty ??
-                                          false)
-                                      ? '${provider.profile!.profileImage}?t=${DateTime.now().millisecondsSinceEpoch}'
-                                      : fallbackImageUrl;
+                                  final profileImageUrl =
+                                      provider.profile?.profileImage;
+                                  final hasImage =
+                                      profileImageUrl != null &&
+                                      profileImageUrl.isNotEmpty;
+
+                                  // If no image, show placeholder
+                                  if (!hasImage) {
+                                    return GestureDetector(
+                                      onTap: _showImageOptions,
+                                      child: CircleAvatar(
+                                        key: const ValueKey(
+                                          'no-image-placeholder',
+                                        ),
+                                        radius: avatarRadius,
+                                        backgroundColor: Colors.grey[300],
+                                        child: Icon(
+                                          Icons.person,
+                                          size: avatarRadius * 1.5,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  // Normalize URL for Android emulator + cache-buster
+                                  String normalizeUrl(String url) {
+                                    if (url.isEmpty) return '';
+                                    String normalized = url;
+
+                                    // If relative path starts with /uploads, prepend baseUrl for Android emulator
+                                    if (normalized.startsWith('/uploads')) {
+                                      normalized =
+                                          'http://10.0.2.2:4000$normalized';
+                                    }
+
+                                    // Replace localhost/127.0.0.1 with Android emulator host
+                                    if (normalized.contains('localhost') ||
+                                        normalized.contains('127.0.0.1')) {
+                                      normalized = normalized
+                                          .replaceAll('localhost', '10.0.2.2')
+                                          .replaceAll('127.0.0.1', '10.0.2.2');
+                                    }
+
+                                    return normalized;
+                                  }
+
+                                  final normalizedUrl = normalizeUrl(
+                                    profileImageUrl,
+                                  );
+
+                                  // Add version-based cache-buster for controlled image refresh
+                                  final cacheBustedUrl =
+                                      '$normalizedUrl?v=${provider.imageVersion}';
+
+                                  // Debug output for monitoring
+                                  if (kDebugMode) {
+                                    debugPrint(
+                                      '[ProfileScreen] Image URL: Original=$profileImageUrl, Normalized=$normalizedUrl, CacheBusted=$cacheBustedUrl',
+                                    );
+                                  }
 
                                   return GestureDetector(
                                     onTap: _showImageOptions,
                                     child: CircleAvatar(
+                                      key: ValueKey(cacheBustedUrl),
                                       radius: avatarRadius,
                                       backgroundColor: Colors.white,
                                       child: ClipOval(
                                         child: Image.network(
-                                          imageUrl,
+                                          cacheBustedUrl,
                                           width: avatarRadius * 2,
                                           height: avatarRadius * 2,
                                           fit: BoxFit.cover,
+                                          loadingBuilder: (context, child, loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            }
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                value:
+                                                    loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                              .cumulativeBytesLoaded /
+                                                          loadingProgress
+                                                              .expectedTotalBytes!
+                                                    : null,
+                                              ),
+                                            );
+                                          },
+                                          errorBuilder: (context, error, stackTrace) {
+                                            if (kDebugMode) {
+                                              debugPrint(
+                                                '[ProfileScreen] Image load error for URL: $cacheBustedUrl\nError: $error\nStackTrace: $stackTrace',
+                                              );
+                                            }
+                                            return Center(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    Icons.person,
+                                                    size: avatarRadius * 1.5,
+                                                    color: Colors.grey[400],
+                                                  ),
+                                                  if (kDebugMode)
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                            top: 8,
+                                                          ),
+                                                      child: Text(
+                                                        'URL: ${cacheBustedUrl.split('?').first}',
+                                                        style: TextStyle(
+                                                          fontSize: 8,
+                                                          color:
+                                                              Colors.grey[500],
+                                                        ),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                            );
+                                          },
                                         ),
                                       ),
                                     ),

@@ -20,4 +20,27 @@ class AuthRepositoryImpl implements AuthRepository {
   ) {
     return remoteDatasource.register(fullName, email, phone, password);
   }
+
+  @override
+  Future<void> forgotPassword(String email) {
+    return remoteDatasource.forgotPassword(email);
+  }
+
+  @override
+  Future<void> verifyResetOtp(String email, String otp) {
+    return remoteDatasource.verifyResetOtp(email, otp);
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+    required String confirmPassword,
+  }) {
+    return remoteDatasource.resetPassword(
+      email: email,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword,
+    );
+  }
 }

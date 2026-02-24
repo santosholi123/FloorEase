@@ -81,4 +81,68 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
 
     return null;
   }
+
+  @override
+  Future<void> forgotPassword(String email) async {
+    print('🔄 Sending OTP request for: $email');
+    try {
+      final response = await apiClient.post(
+        ApiEndpoints.forgotPassword,
+        body: {'email': email.trim()},
+        requiresAuth: false,
+      );
+      print('✅ OTP Response: $response');
+
+      if (response['success'] == false) {
+        final errorMsg = response['message'] ?? 'Failed to send OTP';
+        print('❌ Backend error: $errorMsg');
+        throw Exception(errorMsg);
+      }
+    } catch (e) {
+      print('❌ Exception in forgotPassword: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> verifyResetOtp(String email, String otp) async {
+    print('🔄 Verifying OTP for: $email');
+    try {
+      final response = await apiClient.post(
+        ApiEndpoints.verifyResetOtp,
+        body: {'email': email.trim(), 'otp': otp.trim()},
+        requiresAuth: false,
+      );
+      print('✅ Verify OTP Response: $response');
+
+      if (response['success'] == false) {
+        final errorMsg = response['message'] ?? 'Invalid OTP';
+        print('❌ Backend error: $errorMsg');
+        throw Exception(errorMsg);
+      }
+    } catch (e) {
+      print('❌ Exception in verifyResetOtp: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    final response = await apiClient.post(
+      ApiEndpoints.resetPassword,
+      body: {
+        'email': email.trim(),
+        'newPassword': newPassword,
+        'confirmPassword': confirmPassword,
+      },
+      requiresAuth: false,
+    );
+    if (response['success'] == false) {
+      throw Exception(response['message'] ?? 'Failed to reset password');
+    }
+  }
 }

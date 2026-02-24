@@ -6,4 +6,11 @@ abstract class AuthRemoteDatasource {
     String phone,
     String password,
   );
+  Future<void> forgotPassword(String email);
+  Future<void> verifyResetOtp(String email, String otp);
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+    required String confirmPassword,
+  });
 }

@@ -50,8 +50,7 @@ class BookingStep3Notes extends StatelessWidget {
                         ),
                       ],
                       onChanged: (value) {
-                        provider.preferredTime = value;
-                        provider.notifyListeners();
+                        provider.setPreferredTime(value);
                       },
                       decoration: InputDecoration(
                         labelText: 'Preferred Time',

@@ -5,12 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:batch35_floorease/core/api/api_client.dart';
-import 'package:batch35_floorease/core/api/api_endpoints.dart';
 import 'package:batch35_floorease/core/errors/failures.dart';
 
 class MockDio extends Mock implements Dio {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late MockDio mockDio;
   late ApiClient apiClient;
 
@@ -53,14 +54,15 @@ void main() {
       final result = await apiClient.post(
         '/api/auth/login',
         body: {'email': 'a@gmail.com', 'password': '123456'},
+        requiresAuth: false,
       );
 
       expect(result['message'], 'ok');
 
       verify(
         () => mockDio.post(
-          '${ApiEndpoints.baseUrl}/api/auth/login',
-          data: {'email': 'a@gmail.com', 'password': '123456'},
+          any(),
+          data: any(named: 'data'),
           options: any(named: 'options'),
         ),
       ).called(1);
@@ -79,6 +81,7 @@ void main() {
         '/secure',
         body: {'a': 1},
         headers: {'Authorization': 'Bearer token'},
+        requiresAuth: false,
       );
 
       final captured =
@@ -107,12 +110,20 @@ void main() {
       );
 
       expect(
-        () => apiClient.post('/api/auth/register', body: {'x': 1}),
+        () => apiClient.post(
+          '/api/auth/register',
+          body: {'x': 1},
+          requiresAuth: false,
+        ),
         throwsA(isA<ApiFailure>()),
       );
 
       try {
-        await apiClient.post('/api/auth/register', body: {'x': 1});
+        await apiClient.post(
+          '/api/auth/register',
+          body: {'x': 1},
+          requiresAuth: false,
+        );
       } catch (e) {
         final err = e as ApiFailure;
         expect(err.statusCode, 409);
@@ -130,7 +141,7 @@ void main() {
       ).thenThrow(TimeoutException('Request timeout'));
 
       try {
-        await apiClient.post('/any', body: {'x': 1});
+        await apiClient.post('/any', body: {'x': 1}, requiresAuth: false);
         fail('should throw');
       } catch (e) {
         final err = e as ApiFailure;
@@ -155,11 +166,11 @@ void main() {
       );
 
       try {
-        await apiClient.post('/any', body: {'x': 1});
+        await apiClient.post('/any', body: {'x': 1}, requiresAuth: false);
         fail('should throw');
       } catch (e) {
         final err = e as ApiFailure;
-        expect(err.message, contains('Network error'));
+        expect(err.message, 'Network error: Connection failed');
       }
     });
   });

@@ -44,6 +44,21 @@ class BookingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setServiceType(String? value) {
+    serviceType = value;
+    notifyListeners();
+  }
+
+  void setFlooringType(String? value) {
+    flooringType = value;
+    notifyListeners();
+  }
+
+  void setPreferredTime(String? value) {
+    preferredTime = value;
+    notifyListeners();
+  }
+
   bool validateStep(int step) {
     bool isValid = true;
 

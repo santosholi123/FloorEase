@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:batch35_floorease/core/api/api_client.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/profile_model.dart';
 
@@ -70,14 +71,25 @@ class ProfileRemoteDataSource {
   }
 
   Future<ProfileModel> updateProfileImage(String imageUrl) async {
+    if (kDebugMode) {
+      print('[ProfileRemoteDataSource] Calling PUT /api/auth/profile/image');
+      print('[ProfileRemoteDataSource] Body: {"profileImage": "$imageUrl"}');
+    }
+
     final response = await apiClient.put(
       '/api/auth/profile/image',
       body: {'profileImage': imageUrl},
     );
 
-    final data = response['data'];
-    if (data is Map<String, dynamic>) {
-      return ProfileModel.fromJson(data);
+    if (kDebugMode) {
+      print('[ProfileRemoteDataSource] PUT response: $response');
+    }
+
+    // Backend returns { "message": "...", "user": { profile data } }
+    // or just the profile data directly
+    final user = response['user'];
+    if (user is Map<String, dynamic>) {
+      return ProfileModel.fromJson(user);
     }
     return ProfileModel.fromJson(response);
   }
@@ -85,9 +97,17 @@ class ProfileRemoteDataSource {
   Future<ProfileModel> deleteProfileImage() async {
     final response = await apiClient.delete('/api/auth/profile/image');
 
-    final data = response['data'];
-    if (data is Map<String, dynamic>) {
-      return ProfileModel.fromJson(data);
+    if (kDebugMode) {
+      print(
+        '[ProfileRemoteDataSource] DELETE /api/auth/profile/image response: $response',
+      );
+    }
+
+    // Backend returns { "message": "...", "user": { profile data } }
+    // or just the profile data directly
+    final user = response['user'];
+    if (user is Map<String, dynamic>) {
+      return ProfileModel.fromJson(user);
     }
     return ProfileModel.fromJson(response);
   }

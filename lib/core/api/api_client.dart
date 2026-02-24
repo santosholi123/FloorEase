@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../errors/failures.dart';
 import 'api_endpoints.dart';
 
 class ApiClient {
   final Dio _dio;
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage;
 
-  ApiClient([Dio? dio]) : _dio = dio ?? Dio();
+  ApiClient([Dio? dio, FlutterSecureStorage? secureStorage])
+    : _dio = dio ?? Dio(),
+      _secureStorage = secureStorage ?? const FlutterSecureStorage();
 
   /// POST method for authentication and other endpoints
   ///
@@ -32,9 +35,10 @@ class ApiClient {
         requiresAuth: requiresAuth,
       );
 
+      final baseUrl = await ApiEndpoints.baseUrl;
       final response = await _dio
           .post(
-            '${ApiEndpoints.baseUrl}$endpoint',
+            '$baseUrl$endpoint',
             data: body,
             options: Options(headers: defaultHeaders),
           )
@@ -95,11 +99,9 @@ class ApiClient {
         requiresAuth: requiresAuth,
       );
 
+      final baseUrl = await ApiEndpoints.baseUrl;
       final response = await _dio
-          .get(
-            '${ApiEndpoints.baseUrl}$endpoint',
-            options: Options(headers: defaultHeaders),
-          )
+          .get('$baseUrl$endpoint', options: Options(headers: defaultHeaders))
           .timeout(
             ApiEndpoints.timeout,
             onTimeout: () {
@@ -149,9 +151,18 @@ class ApiClient {
         requiresAuth: requiresAuth,
       );
 
+      final baseUrl = await ApiEndpoints.baseUrl;
+      final fullUrl = '$baseUrl$endpoint';
+
+      if (kDebugMode) {
+        print('[ApiClient] PUT $fullUrl');
+        print('[ApiClient] Headers: $defaultHeaders');
+        print('[ApiClient] Body: $body');
+      }
+
       final response = await _dio
           .put(
-            '${ApiEndpoints.baseUrl}$endpoint',
+            fullUrl,
             data: body,
             options: Options(headers: defaultHeaders),
           )
@@ -161,6 +172,11 @@ class ApiClient {
               throw TimeoutException('Request timeout');
             },
           );
+
+      if (kDebugMode) {
+        print('[ApiClient] PUT Response Status: ${response.statusCode}');
+        print('[ApiClient] PUT Response Data: ${response.data}');
+      }
 
       return _handleResponse(response);
     } on TimeoutException {
@@ -203,9 +219,10 @@ class ApiClient {
         requiresAuth: requiresAuth,
       );
 
+      final baseUrl = await ApiEndpoints.baseUrl;
       final response = await _dio
           .delete(
-            '${ApiEndpoints.baseUrl}$endpoint',
+            '$baseUrl$endpoint',
             options: Options(headers: defaultHeaders),
           )
           .timeout(
@@ -257,11 +274,16 @@ class ApiClient {
         requiresAuth: requiresAuth,
       );
 
+      // Remove Content-Type header for multipart so Dio can set boundary automatically
+      final mutableHeaders = Map<String, dynamic>.from(defaultHeaders);
+      mutableHeaders.remove('Content-Type');
+
+      final baseUrl = await ApiEndpoints.baseUrl;
       final response = await _dio
           .post(
-            '${ApiEndpoints.baseUrl}$endpoint',
+            '$baseUrl$endpoint',
             data: body,
-            options: Options(headers: defaultHeaders),
+            options: Options(headers: mutableHeaders),
           )
           .timeout(
             ApiEndpoints.timeout,

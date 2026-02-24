@@ -54,8 +54,7 @@ class BookingStep2Service extends StatelessWidget {
                         ),
                       ],
                       onChanged: (value) {
-                        provider.serviceType = value;
-                        provider.notifyListeners();
+                        provider.setServiceType(value);
                       },
                       decoration: InputDecoration(
                         labelText: 'Service Type',
@@ -88,8 +87,7 @@ class BookingStep2Service extends StatelessWidget {
                         ),
                       ],
                       onChanged: (value) {
-                        provider.flooringType = value;
-                        provider.notifyListeners();
+                        provider.setFlooringType(value);
                       },
                       decoration: InputDecoration(
                         labelText: 'Flooring Type',

@@ -15,6 +15,22 @@ class ProfileEntity extends Equatable {
   final String phone;
   final String? profileImage;
 
+  ProfileEntity copyWith({
+    String? id,
+    String? fullName,
+    String? email,
+    String? phone,
+    String? profileImage,
+  }) {
+    return ProfileEntity(
+      id: id ?? this.id,
+      fullName: fullName ?? this.fullName,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      profileImage: profileImage ?? this.profileImage,
+    );
+  }
+
   @override
   List<Object?> get props => [id, fullName, email, phone, profileImage];
 }

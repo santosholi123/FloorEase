@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:batch35_floorease/core/errors/failures.dart';
 import 'package:batch35_floorease/features/dashboard/presentation/pages/home_screen.dart';
 import 'package:batch35_floorease/features/auth/presentation/pages/create_account_screen.dart';
+import 'package:batch35_floorease/features/auth/presentation/pages/reset_password_screen.dart';
 import 'package:batch35_floorease/features/auth/presentation/pages/auth_debug_screen.dart';
 import 'package:batch35_floorease/features/auth/presentation/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -139,7 +140,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ResetPasswordScreen(),
+                                  ),
+                                );
+                              },
                               child: const Text(
                                 'Reset Password?',
                                 style: TextStyle(color: Colors.black87),
@@ -258,18 +267,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               'Help and Support',
                               style: TextStyle(color: Colors.black87),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Center(
-                            child: TextButton(
-                              onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const AuthDebugScreen(),
-                                ),
-                              ),
-                              child: const Text('Debug: show stored users'),
                             ),
                           ),
                           const SizedBox(height: 24),
